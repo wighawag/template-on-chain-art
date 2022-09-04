@@ -5,6 +5,7 @@
 const {spawn} = require('child_process');
 const path = require('path');
 require('dotenv').config();
+const fs = require('fs');
 
 const commandlineArgs = process.argv.slice(2);
 
@@ -47,7 +48,7 @@ function parseArgs(rawArgs, numFixedArgs, expectedOptions) {
 	return {options, extra, fixedArgs};
 }
 
-function execute(command) {
+function execute(command, stdioToFile) {
 	return new Promise((resolve, reject) => {
 		const onExit = (error) => {
 			if (error) {
@@ -55,10 +56,17 @@ function execute(command) {
 			}
 			resolve();
 		};
-		spawn(command.split(' ')[0], command.split(' ').slice(1), {
-			stdio: 'inherit',
+		let writeStream;
+		if (stdioToFile) {
+			writeStream = fs.createWriteStream(stdioToFile, 'utf-8');
+		}
+		const shell = spawn(command.split(' ')[0], command.split(' ').slice(1), {
+			stdio: stdioToFile ? undefined : 'inherit',
 			shell: true
 		}).on('exit', onExit);
+		if (writeStream) {
+			shell.stdout.pipe(writeStream);
+		}
 	});
 }
 
@@ -76,10 +84,30 @@ async function performAction(rawArgs) {
 			`cross-env HARDHAT_DEPLOY_LOG=true HARDHAT_NETWORK=${fixedArgs[0]} ts-node --files ${filepath} ${extra.join(' ')}`
 		);
 	} else if (firstArg === 'geth') {
-		// const {fixedArgs, extra} = parseArgs(args, 1, {});
 		execute(`docker-compose up`);
 		await execute(`wait-on tcp:localhost:8545`);
 		await performAction([`run`, 'localhost', 'scripts/fundingFromCoinbase.ts']);
+	} else if (firstArg === 'geth:dev') {
+		try {
+			execute(`docker-compose down -v --remove-orphans`, 'geth.log').catch((e) => console.log(e));
+		} catch (err) {
+			console.error(`down error`, err);
+		}
+
+		try {
+			execute(`docker-compose up`, 'geth.log').catch((e) => console.log(e));
+		} catch (err) {
+			console.error(`up error`, err);
+		}
+
+		await execute(`wait-on tcp:localhost:8545`);
+		await performAction([`run`, 'localhost', 'scripts/fundingFromCoinbase.ts']);
+		try {
+			fs.rmSync('deployments/localhost', {recursive: true});
+		} catch (err) {}
+
+		execute(`npm run serve`, 'geth.log');
+		execute(`npm run local:dev`);
 	} else if (firstArg === 'deploy') {
 		const {fixedArgs, extra} = parseArgs(args, 1, {});
 		await execute(`hardhat --network ${fixedArgs[0]} deploy --report-gas ${extra.join(' ')}`);

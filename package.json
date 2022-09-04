@@ -60,6 +60,7 @@
     "dev:node": "cross-env MINING_INTERVAL=\"3000,5000\" hardhat node --hostname 0.0.0.0",
     "dev": "cross-env MINING_INTERVAL=\"3000,5000\" hardhat node --hostname 0.0.0.0 --watch",
     "geth": "node ./_scripts.js geth",
+    "geth:dev": "node ./_scripts.js geth:dev",
     "local:dev": "hardhat --network localhost deploy --watch",
     "execute": "node ./_scripts.js run",
     "deploy": "node ./_scripts.js deploy",
