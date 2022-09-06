@@ -8,8 +8,6 @@ pnpm i
 
 ## run a node, a web server and a contract deployer (automatic on code changes)
 
-- Using hardhat that can leverage hardhat-deploy to reuse deployment procedures and named accounts:
-
 ```bash
 pnpm geth:dev
 ```
