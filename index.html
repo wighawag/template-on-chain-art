@@ -145,7 +145,7 @@
 							if (json.description) {
 								description.innerHTML = json.description;
 							}
-							if (json.image && json.image.startsWith('data:')) {
+							if (json.image) {
 								if (json.image !== img.src) {
 									img.src = json.image;
 								}
