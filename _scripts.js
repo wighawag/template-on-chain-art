@@ -48,7 +48,7 @@ function parseArgs(rawArgs, numFixedArgs, expectedOptions) {
 	return {options, extra, fixedArgs};
 }
 
-function execute(command, stdioToFile) {
+function execute(command, stdioToFile, options) {
 	return new Promise((resolve, reject) => {
 		const onExit = (error) => {
 			if (error) {
@@ -62,7 +62,8 @@ function execute(command, stdioToFile) {
 		}
 		const shell = spawn(command.split(' ')[0], command.split(' ').slice(1), {
 			stdio: stdioToFile ? undefined : 'inherit',
-			shell: true
+			shell: options ? options.shell : true,
+			detached: options ? options.detached : undefined
 		}).on('exit', onExit);
 		if (writeStream) {
 			shell.stdout.pipe(writeStream);
@@ -85,20 +86,20 @@ async function performAction(rawArgs) {
 		);
 	} else if (firstArg === 'geth') {
 		await execute(`docker-compose down -v --remove-orphans`);
-		execute(`docker-compose up`);
+		execute(`docker-compose up`, 'geth.log', {shell: false});
 		await execute(`wait-on tcp:localhost:8545`);
 		await performAction([`run`, 'localhost', 'scripts/fundingFromCoinbase.ts']);
 	} else if (firstArg === 'geth:stop') {
 		await execute(`docker-compose down -v --remove-orphans`);
 	} else if (firstArg === 'geth:dev') {
 		try {
-			await execute(`docker-compose down -v --remove-orphans`, 'geth.log').catch((e) => console.log(e));
+			await execute(`docker-compose down -v --remove-orphans`).catch((e) => console.log(e));
 		} catch (err) {
 			console.error(`down error`, err);
 		}
 
 		try {
-			execute(`docker-compose up`, 'geth.log').catch((e) => console.log(e));
+			execute(`docker-compose up`, 'geth.log', {shell: false}).catch((e) => console.log(e));
 		} catch (err) {
 			console.error(`up error`, err);
 		}
@@ -109,7 +110,7 @@ async function performAction(rawArgs) {
 			fs.rmSync('deployments/localhost', {recursive: true});
 		} catch (err) {}
 
-		execute(`npm run serve`, 'web.log');
+		execute(`npm run serve`, 'web.log', {shell: false});
 		await execute(`npm run local:dev`);
 	} else if (firstArg === 'deploy') {
 		const {fixedArgs, extra} = parseArgs(args, 1, {});
