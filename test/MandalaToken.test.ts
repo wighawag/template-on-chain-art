@@ -1,12 +1,12 @@
 import {expect} from './chai-setup';
 import {ethers, deployments, getUnnamedAccounts} from 'hardhat';
 import {setupUsers} from './utils/users';
-import {BleepsDemo} from '../typechain';
+import {MandalaToken} from '../typechain';
 
 const setup = deployments.createFixture(async () => {
-	await deployments.fixture('BleepsDemo');
+	await deployments.fixture('MandalaToken');
 	const contracts = {
-		BleepsDemo: <BleepsDemo>await ethers.getContract('BleepsDemo')
+		MandalaToken: <MandalaToken>await ethers.getContract('MandalaToken')
 	};
 	const users = await setupUsers(await getUnnamedAccounts(), contracts);
 	return {
@@ -15,7 +15,7 @@ const setup = deployments.createFixture(async () => {
 	};
 });
 
-describe('BleepsDemo', function () {
+describe('MandalaToken', function () {
 	it('works', async function () {
 		const state = await setup();
 		expect(state).to.be.not.null;

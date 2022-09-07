@@ -12,7 +12,7 @@ const config: HardhatUserConfig = {
 	solidity: {
 		compilers: [
 			{
-				version: '0.8.13',
+				version: '0.8.16',
 				settings: {
 					optimizer: {
 						enabled: true,
@@ -23,7 +23,7 @@ const config: HardhatUserConfig = {
 		]
 	},
 	namedAccounts: {
-		deployer: 0,
+		deployer: 0
 	},
 	networks: addForkConfiguration({
 		hardhat: {

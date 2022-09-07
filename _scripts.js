@@ -84,12 +84,13 @@ async function performAction(rawArgs) {
 			`cross-env HARDHAT_DEPLOY_LOG=true HARDHAT_NETWORK=${fixedArgs[0]} ts-node --files ${filepath} ${extra.join(' ')}`
 		);
 	} else if (firstArg === 'geth') {
+		await execute(`docker-compose down -v --remove-orphans`);
 		execute(`docker-compose up`);
 		await execute(`wait-on tcp:localhost:8545`);
 		await performAction([`run`, 'localhost', 'scripts/fundingFromCoinbase.ts']);
 	} else if (firstArg === 'geth:dev') {
 		try {
-			execute(`docker-compose down -v --remove-orphans`, 'geth.log').catch((e) => console.log(e));
+			await execute(`docker-compose down -v --remove-orphans`, 'geth.log').catch((e) => console.log(e));
 		} catch (err) {
 			console.error(`down error`, err);
 		}
