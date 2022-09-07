@@ -75,6 +75,6 @@
     "fork:node": "node ./_scripts.js fork:node",
     "fork:test": "node ./_scripts.js fork:test",
     "tenderly:push": "node ./_scripts.js tenderly:push",
-    "serve": "ipfs-emulator --only -d . -p 8080"
+    "serve": "ipfs-emulator --only -d . -p 4242"
   }
 }

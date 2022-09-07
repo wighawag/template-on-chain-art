@@ -12,8 +12,8 @@ pnpm i
 pnpm geth:dev
 ```
 
-You can then navigate on [http://localhost:8080](http://localhost:8080)
+You can then navigate on [http://localhost:4242](http://localhost:4242)
 
 it will pick the last ERC721 transfer event and display the corresponding token
 
-You can also specify a specifc token this way: `http://localhost:8080#<contract address>_<token id>`
+You can also specify a specifc token this way: `http://localhost:4242#<contract address>_<token id>`
