@@ -110,7 +110,7 @@ async function performAction(rawArgs) {
 		} catch (err) {}
 
 		execute(`npm run serve`, 'web.log');
-		execute(`npm run local:dev`);
+		await execute(`npm run local:dev`);
 	} else if (firstArg === 'deploy') {
 		const {fixedArgs, extra} = parseArgs(args, 1, {});
 		await execute(`hardhat --network ${fixedArgs[0]} deploy --report-gas ${extra.join(' ')}`);
