@@ -107,7 +107,7 @@ async function performAction(rawArgs) {
 			fs.rmSync('deployments/localhost', {recursive: true});
 		} catch (err) {}
 
-		execute(`npm run serve`, 'geth.log');
+		// execute(`npm run serve`, 'web.log');
 		execute(`npm run local:dev`);
 	} else if (firstArg === 'deploy') {
 		const {fixedArgs, extra} = parseArgs(args, 1, {});

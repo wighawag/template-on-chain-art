@@ -69,6 +69,115 @@
 				return str;
 			}
 
+      async function fetchLatestBlock() {
+        const result = await fetch('http://localhost:8545', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            jsonrpc: '2.0',
+            id: 1,
+            method: 'eth_blockNumber',
+            params: []
+          })
+        }).then(v => v.json());
+        return parseInt(result.result.slice(2), 16);
+      }
+
+      let latestBlock;
+      async function fetchTokenFromLastTransferEvent(batchSize, back) {
+        if (!latestBlock) {
+          latestBlock = await fetchLatestBlock();
+        }
+        if (!batchSize) {
+          batchSize = 100;
+        }
+        batchSize = Math.min(batchSize, latestBlock);
+        if (!back) {
+          back = 0;
+        }
+        const fromBlockNumber = (latestBlock - batchSize - back);
+        const toBlockNumber = (latestBlock - back);
+        console.log({fromBlockNumber, toBlockNumber});
+        const fromBlock = '0x' + fromBlockNumber.toString(16);
+        const toBlock = '0x' + toBlockNumber.toString(16);
+
+
+        try {
+          const result = await fetch('http://localhost:8545', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              jsonrpc: '2.0',
+              id: 1,
+              method: 'eth_getLogs',
+              params: [
+                {
+                  fromBlock,
+                  toBlock,
+                  topics: ['0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef']
+                }
+              ]
+            })
+          }).then(v => v.json());
+          if (result.result.length) {
+            return {contractAddress: result.result[result.result.length - 1].address, tokenIDAsHex: result.result[result.result.length - 1].topics[3].slice(26)};
+          }
+          if (fromBlockNumber == 0) {
+            return undefined;
+          } else {
+            console.log(`fetching more logs...`)
+            return fetchTokenFromLastTransferEvent(100, batchSize);
+          }
+
+        } catch(err) {
+          console.error(err)
+        }
+
+      }
+
+
+
+      function fetchToken(contractAddress, tokenIDAsHex) {
+        const data = '0xc87b56dd' + tokenIDAsHex.padStart(64, '0');
+        console.log({data});
+
+        return fetch('http://localhost:8545', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            jsonrpc: '2.0',
+            id: 1,
+            method: 'eth_call',
+            params: [
+              {
+                data,
+                to: contractAddress
+              },
+              'latest'
+            ]
+          })
+        });
+      }
+
+      async function fetchIt(contractAddress, tokenIDAsHex) {
+        if (contractAddress && tokenIDAsHex) {
+          return fetchToken(contractAddress, tokenIDAsHex);
+        } else {
+          console.log(`no contract or token specified`);
+          const data = await fetchTokenFromLastTransferEvent();
+          if (!data) {
+            return undefined;
+          }
+          return fetchToken(data.contractAddress, data.tokenIDAsHex);
+        }
+      }
+
 			const title = document.getElementById('nft-title');
 			const description = document.getElementById('nft-description');
 			const img = document.getElementById('nft-image');
@@ -77,104 +186,94 @@
 			const iframe = document.getElementById('nft-iframe');
 			sound.style.display = 'none';
       iframeWrapper.style.display = 'none';
+
 			function refresh() {
 				const hashStr = location.hash && location.hash.slice(1);
-				if (hashStr) {
-					const splitted = hashStr.split('_');
-					const contractAddress = splitted[0];
-					const tokenID = splitted[1];
-					console.log({tokenID, contractAddress});
 
-					const tokenIDAsHex = tokenID.startsWith('0x') ? tokenID.slice(2) : parseInt(tokenID).toString(16);
-					const data = '0xc87b56dd' + tokenIDAsHex.padStart(64, '0');
-					console.log({data});
-					let tokenURIResponse;
-					fetch('http://localhost:8545', {
-						method: 'POST',
-						headers: {
-							'Content-Type': 'application/json'
-						},
-						body: JSON.stringify({
-							jsonrpc: '2.0',
-							id: 1,
-							method: 'eth_call',
-							params: [
-								{
-									data,
-									to: contractAddress
-								},
-								'latest'
-							]
-						})
-					})
-						.then((response) => response.json())
-						.then((json) => {
-							if (json.error) {
-								console.error(json.error);
-								throw json.error;
-							}
-							return json;
-						})
-						.then((json) => json.result)
-						.then((hex) => hex.slice(2))
-						.then((hex) => hex.slice(64))
-						.then((hex) => {
-							const len = hex.slice(0, 64);
-							const size = parseInt(len, 16);
-							return hex.slice(64, 64 + size * 2);
-						})
-						.then((hex) => hex_to_ascii(hex))
-						.then((tokenURI) => {
-							console.log({tokenURI});
-							return fetch(tokenURI);
-						})
-						.then(async (response) => {
-							tokenURIResponse = response.clone();
-							console.log({
-								metadata: await response.clone().text()
-							});
-							return response.json();
-						})
-						.then((json) => {
-							console.log({
-								json
-							});
-							if (json.name) {
-								title.innerHTML = json.name;
-							}
-							if (json.description) {
-								description.innerHTML = json.description;
-							}
-							if (json.image) {
-								if (json.image !== img.src) {
-									img.src = json.image;
-								}
-							}
-							if (json.animation_url) {
-								if (json.animation_url.startsWith('data:audio/')) {
-									if (json.animation_url !== sound.src) {
-										sound.style.display = 'inline-block';
-										sound.src = json.animation_url;
-									}
-								} else if (json.animation_url.startsWith('data:text/html')) {
-									if (json.animation_url !== iframe.src) {
-										iframeWrapper.style.display = 'inline-block';
-										iframe.src = json.animation_url;
-									}
-								} else {
-									// TODO ?
-								}
-							}
-						})
-						.catch(async (e) => {
-							console.error('ERROR', e);
-							console.log({
-								tokenURIRAW: await tokenURIResponse.text()
-							});
-						});
-				}
+        let tokenIDAsHex;
+        let contractAddress;
+        if (hashStr) {
+          const splitted = hashStr.split('_');
+          contractAddress = splitted[0];
+          const tokenID = splitted[1];
+          console.log({tokenID, contractAddress});
+
+          tokenIDAsHex = tokenID.startsWith('0x') ? tokenID.slice(2) : parseInt(tokenID).toString(16);
+
+        }
+
+        console.log({tokenIDAsHex, contractAddress});
+
+        let tokenURIResponse;
+        fetchIt(contractAddress, tokenIDAsHex)
+          .then((response) => response.json())
+          .then((json) => {
+            if (json.error) {
+              console.error(json.error);
+              throw json.error;
+            }
+            return json;
+          })
+          .then((json) => json.result)
+          .then((hex) => hex.slice(2))
+          .then((hex) => hex.slice(64))
+          .then((hex) => {
+            const len = hex.slice(0, 64);
+            const size = parseInt(len, 16);
+            return hex.slice(64, 64 + size * 2);
+          })
+          .then((hex) => hex_to_ascii(hex))
+          .then((tokenURI) => {
+            console.log({tokenURI});
+            return fetch(tokenURI);
+          })
+          .then(async (response) => {
+            tokenURIResponse = response.clone();
+            console.log({
+              metadata: await response.clone().text()
+            });
+            return response.json();
+          })
+          .then((json) => {
+            console.log({
+              json
+            });
+            if (json.name) {
+              title.innerHTML = json.name;
+            }
+            if (json.description) {
+              description.innerHTML = json.description;
+            }
+            if (json.image) {
+              if (json.image !== img.src) {
+                img.src = json.image;
+              }
+            }
+            if (json.animation_url) {
+              if (json.animation_url.startsWith('data:audio/')) {
+                if (json.animation_url !== sound.src) {
+                  sound.style.display = 'inline-block';
+                  sound.src = json.animation_url;
+                }
+              } else if (json.animation_url.startsWith('data:text/html')) {
+                if (json.animation_url !== iframe.src) {
+                  iframeWrapper.style.display = 'inline-block';
+                  iframe.src = json.animation_url;
+                }
+              } else {
+                // TODO ?
+              }
+            }
+          })
+          .catch(async (e) => {
+            console.error('ERROR', e);
+            console.log({
+              tokenURIRAW: await tokenURIResponse.text()
+            });
+          });
 			}
-			let timeout;
+
+      let timeout;
 			function refreshAgainAndAgain() {
 				refresh();
 				timeout = setTimeout(refreshAgainAndAgain, 1000);
