@@ -30,7 +30,7 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 	if (!hre.network.live) {
 		const {signature, tokenId} = await randomMintSignature(deployer);
 		log({tokenId});
-		// await execute('MandalaToken', {from: deployer, log: true, value: initialPrice}, 'mint', deployer, signature);
+		await execute('MandalaToken', {from: deployer, log: true, value: initialPrice}, 'mint', deployer, signature);
 	}
 };
 export default func;
