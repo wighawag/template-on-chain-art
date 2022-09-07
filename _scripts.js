@@ -88,6 +88,8 @@ async function performAction(rawArgs) {
 		execute(`docker-compose up`);
 		await execute(`wait-on tcp:localhost:8545`);
 		await performAction([`run`, 'localhost', 'scripts/fundingFromCoinbase.ts']);
+	} else if (firstArg === 'geth:stop') {
+		await execute(`docker-compose down -v --remove-orphans`);
 	} else if (firstArg === 'geth:dev') {
 		try {
 			await execute(`docker-compose down -v --remove-orphans`, 'geth.log').catch((e) => console.log(e));
