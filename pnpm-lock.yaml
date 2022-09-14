@@ -17,14 +17,13 @@ specifiers:
   ethers: ^5.6.4
   fs-extra: ^10.1.0
   hardhat: ^2.11.0
-  hardhat-deploy: ^0.11.4
+  hardhat-deploy: ^0.11.15
   hardhat-deploy-tenderly: ^0.2.0
   hardhat-gas-reporter: ^1.0.8
   ipfs-gateway-emulator: 4.2.1-ipfs.2
   mocha: ^10.0.0
   prettier: ^2.6.2
   prettier-plugin-solidity: ^1.0.0-beta.19
-  solhint-plugin-prettier: ^0.0.5
   solidity-coverage: ^0.7.20
   ts-generator: ^0.1.1
   ts-node: ^10.7.0
@@ -49,14 +48,13 @@ devDependencies:
   ethers: 5.7.0
   fs-extra: 10.1.0
   hardhat: 2.11.0_s5ojjbx2isjkawqptqpitvy25q
-  hardhat-deploy: 0.11.13
-  hardhat-deploy-tenderly: 0.2.0_tkdq6bvuvqnj74uw6groo6myqq
+  hardhat-deploy: 0.11.15
+  hardhat-deploy-tenderly: 0.2.0_dlqvgt6rns7gri5f5xniiyoj7e
   hardhat-gas-reporter: 1.0.8_hardhat@2.11.0
   ipfs-gateway-emulator: 4.2.1-ipfs.2
   mocha: 10.0.0
   prettier: 2.7.1
   prettier-plugin-solidity: 1.0.0-beta.24_prettier@2.7.1
-  solhint-plugin-prettier: 0.0.5_hwxylllfazz3b32qkrkocph6du
   solidity-coverage: 0.7.21
   ts-generator: 0.1.1
   ts-node: 10.9.1_tphhiizkxv2hzwkunblc3hbmra
@@ -2720,10 +2718,6 @@ packages:
     resolution: {integrity: sha512-f3qQ9oQy9j2AhBe/H9VC91wLmKBCCU/gDOnKNAYG5hswO7BLKj09Hc5HYNz9cGI++xlpDCIgDaitVs03ATR84Q==}
     dev: true
 
-  /fast-diff/1.2.0:
-    resolution: {integrity: sha512-xJuoT5+L99XlZ8twedaRf6Ax2TgQVxvgZOYoPKqZufmJib0tL2tegPBOZb1pVNgIhlqDlA0eO0c3wBvQcmzx4w==}
-    dev: true
-
   /fast-glob/3.2.11:
     resolution: {integrity: sha512-xrO3+1bxSo3ZVHAnqzyuewYT6aMFHRAd4Kcs92MAonjwQZLsK9d0SF1IyQ3k5PoirxTW0Oe/RqFgMQ6TcNE5Ew==}
     engines: {node: '>=8.6.0'}
@@ -3235,7 +3229,7 @@ packages:
       hardhat: 2.11.0_s5ojjbx2isjkawqptqpitvy25q
     dev: true
 
-  /hardhat-deploy-tenderly/0.2.0_tkdq6bvuvqnj74uw6groo6myqq:
+  /hardhat-deploy-tenderly/0.2.0_dlqvgt6rns7gri5f5xniiyoj7e:
     resolution: {integrity: sha512-obJm+Wh7tRsLRFgmZkkUGC1/RU37J2gHQfCt+ndbSswW5XCjSOIu6tkShhYp147HqOPml84X2qX6qZku1ykIZQ==}
     peerDependencies:
       hardhat: ^2.0.0
@@ -3243,14 +3237,14 @@ packages:
     dependencies:
       axios: 0.24.0
       hardhat: 2.11.0_s5ojjbx2isjkawqptqpitvy25q
-      hardhat-deploy: 0.11.13
+      hardhat-deploy: 0.11.15
       js-yaml: 4.1.0
     transitivePeerDependencies:
       - debug
     dev: true
 
-  /hardhat-deploy/0.11.13:
-    resolution: {integrity: sha512-2kcNce74b4cNALx6I76IZCGSqhxvg2wOLSa3N988o4jYGEMFnQuwSTwJQ/RkZAqIZ5IvWo2jpBS/KUzEt+Igdw==}
+  /hardhat-deploy/0.11.15:
+    resolution: {integrity: sha512-7e/GfVLmSXlcVePVFbC/xZ8mD97ChR6gHeUbejWMvzXpZ6I5bjSPZuaH5AebRRlb/6LjeIrN1+bKnayY0Sw9aA==}
     dependencies:
       '@types/qs': 6.9.7
       axios: 0.21.4_debug@4.3.4
@@ -5123,13 +5117,6 @@ packages:
     engines: {node: '>=4'}
     dev: true
 
-  /prettier-linter-helpers/1.0.0:
-    resolution: {integrity: sha512-GbK2cP9nraSSUF9N2XwUwqfzlAFlMNYYl+ShE/V+H8a9uNl/oUqB1w2EL54Jh0OlyRSd8RfWYJ3coVS4TROP2w==}
-    engines: {node: '>=6.0.0'}
-    dependencies:
-      fast-diff: 1.2.0
-    dev: true
-
   /prettier-plugin-solidity/1.0.0-beta.24_prettier@2.7.1:
     resolution: {integrity: sha512-6JlV5BBTWzmDSq4kZ9PTXc3eLOX7DF5HpbqmmaF+kloyUwOZbJ12hIYsUaZh2fVgZdV2t0vWcvY6qhILhlzgqg==}
     engines: {node: '>=12'}
@@ -5736,17 +5723,6 @@ packages:
       tmp: 0.0.33
     transitivePeerDependencies:
       - debug
-    dev: true
-
-  /solhint-plugin-prettier/0.0.5_hwxylllfazz3b32qkrkocph6du:
-    resolution: {integrity: sha512-7jmWcnVshIrO2FFinIvDQmhQpfpS2rRRn3RejiYgnjIE68xO2bvrYvjqVNfrio4xH9ghOqn83tKuTzLjEbmGIA==}
-    peerDependencies:
-      prettier: ^1.15.0 || ^2.0.0
-      prettier-plugin-solidity: ^1.0.0-alpha.14
-    dependencies:
-      prettier: 2.7.1
-      prettier-linter-helpers: 1.0.0
-      prettier-plugin-solidity: 1.0.0-beta.24_prettier@2.7.1
     dev: true
 
   /solidity-comments-extractor/0.0.7:
