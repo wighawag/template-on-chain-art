@@ -82,7 +82,9 @@ async function performAction(rawArgs) {
 			filepath = filepath.slice(folder.length + 1);
 		}
 		await execute(
-			`cross-env HARDHAT_DEPLOY_LOG=true HARDHAT_NETWORK=${fixedArgs[0]} ts-node --files ${filepath} ${extra.join(' ')}`
+			`cross-env HARDHAT_DEPLOY_LOG=true HARDHAT_NETWORK=${fixedArgs[0]} ts-node --files ${filepath} ${extra.join(
+				' '
+			)}`
 		);
 	} else if (firstArg === 'geth') {
 		await execute(`docker-compose down -v --remove-orphans`);
