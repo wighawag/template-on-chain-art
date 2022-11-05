@@ -80,7 +80,7 @@ const config: HardhatUserConfig = {
 		: undefined,
 
 	tenderly: {
-		project: 'blockies',
+		project: 'template-ethereum-contracts',
 		username: process.env.TENDERLY_USERNAME as string,
 	},
 };
