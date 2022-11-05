@@ -18,8 +18,14 @@ it will pick the last ERC721 transfer event and display the corresponding token
 
 You can also specify a specifc token this way: `http://localhost:4242#<contract address>_<token id>`
 
-With the mandalas example, you can mint more token via
+With the blockie example, you can mint more token via
 
 ```
-pnpm execute localhost scripts/mint.ts
+pnpm execute localhost scripts/mint.ts <tokenId>
+```
+
+example
+
+```
+pnpm execute localhost scripts/mint.ts 1
 ```

@@ -1,7 +1,6 @@
 module.exports = {
 	useTabs: true,
 	singleQuote: true,
-	trailingComma: 'none',
 	printWidth: 120,
 	bracketSpacing: false,
 	overrides: [
@@ -11,9 +10,9 @@ module.exports = {
 				printWidth: 120,
 				singleQuote: false,
 				explicitTypes: 'always',
-				parser: 'solidity-parse'
-			}
-		}
+				parser: 'solidity-parse',
+			},
+		},
 	],
-	plugins: [require('prettier-plugin-solidity')]
+	plugins: [require('prettier-plugin-solidity')],
 };
